@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Web.UI.WebControls;
-using Json.Net;
+
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Authenticators;
+
 
 namespace WrapperAPI
 {
@@ -40,6 +39,8 @@ namespace WrapperAPI
         {
             public string[] username { get; set; }
             public string[] email { get; set; }
+            
+            public string[] password { get; set; }
         }
 
         
@@ -54,7 +55,7 @@ namespace WrapperAPI
             return Tuple.Create(ans?.access_token, ans?.refresh_token , ans?.access_token!=null);
         }
 
-        public Tuple<bool, string[], string[]> Registrate(string username, string password, string email) 
+        public Tuple<bool, string[], string[], string[]> Registrate(string username, string password, string email) 
         {
             var request = new RestRequest("/api/users",Method.POST);
             request.AddHeader("Accept", "application/json");
@@ -67,13 +68,14 @@ namespace WrapperAPI
             var isOk = ans != null && ans.message == null;
             string[] errorUsername = null;
             string[] errorEmail = null;
-           
-            if (isOk) return Tuple.Create(isOk, errorEmail, errorUsername);
+            string[] errorPasword = null;
+            if (isOk) return Tuple.Create(isOk, errorEmail, errorUsername, errorPasword);
             
             if (ans != null) errorUsername = ans.errors.username;
             if (ans != null) errorEmail = ans.errors.email;
+            if (ans != null) errorPasword = ans.errors.password;
 
-            return Tuple.Create(isOk, errorEmail, errorUsername);
+            return Tuple.Create(isOk, errorEmail, errorUsername, errorPasword);
             
 
         }
